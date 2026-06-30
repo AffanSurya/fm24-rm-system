@@ -1,0 +1,57 @@
+{
+  "Advanced Forward": {
+    "acceleration": 5,
+    "pace": 5,
+    "finishing": 5,
+    "off_the_ball": 5,
+    "composure": 4,
+    "dribbling": 4,
+    "technique": 4,
+    "anticipation": 3,
+    "work_rate": 3
+  },
+  "Deep Lying Playmaker": {
+    "passing": 5,
+    "vision": 5,
+    "technique": 5,
+    "composure": 4,
+    "decisions": 4,
+    "first_touch": 4,
+    "teamwork": 4,
+    "anticipation": 3,
+    "positioning": 3
+  },
+  "Sweeper Keeper": {
+    "reflexes": 5,
+    "agility": 5,
+    "one_on_ones": 5,
+    "command_of_area": 4,
+    "handling": 4,
+    "communication": 4,
+    "passing": 3,
+    "first_touch": 3,
+    "vision": 2
+  },
+  "Ball Playing Defender": {
+    "tackling": 5,
+    "marking": 5,
+    "positioning": 5,
+    "heading": 4,
+    "jumping_reach": 4,
+    "strength": 4,
+    "passing": 4,
+    "composure": 4,
+    "vision": 3
+  },
+  "Complete Wing Back": {
+    "pace": 5,
+    "acceleration": 5,
+    "stamina": 5,
+    "crossing": 5,
+    "dribbling": 4,
+    "work_rate": 4,
+    "off_the_ball": 4,
+    "tackling": 3,
+    "positioning": 3
+  }
+}
