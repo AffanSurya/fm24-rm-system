@@ -1,4 +1,9 @@
 {
+  "_metadata": {
+    "version": "1.0",
+    "fm_patch": "24.3.0",
+    "description": "Custom tactical weights for FM24"
+  },
   "Advanced Forward": {
     "acceleration": 5,
     "pace": 5,

@@ -1,7 +1,44 @@
 import re
+import os
 from typing import Dict, Any, Tuple
 from src.core.config import ATTRIBUTE_MAP, STATUS_FLAGS, FINANCIAL_MULTIPLIERS, WAGE_SUFFIX_MULTIPLIERS
 from src.core.schemas import KnowledgeLevel
+
+def check_schema_drift(raw_row: Dict[str, Any]):
+    """
+    Validates schema against FM patches. 
+    Hard fails on critical missing data. Logs warnings on unknown columns.
+    """
+    raw_keys = [str(k).strip() for k in raw_row.keys()]
+    
+    # Check Critical
+    has_name = "Name" in raw_keys or "name" in raw_keys
+    has_age = "Age" in raw_keys or "age" in raw_keys
+    
+    missing_critical = []
+    if not has_name: missing_critical.append("Name")
+    if not has_age: missing_critical.append("Age")
+        
+    if missing_critical:
+        raise ValueError(f"CRITICAL DRIFT: Missing core columns {missing_critical}. Cannot proceed.")
+        
+    # Check Unknown (Warning only)
+    unknown_cols = [k for k in raw_keys if k not in ATTRIBUTE_MAP and k.lower() not in ATTRIBUTE_MAP.values()]
+    
+    # We ignore standard columns like Name, Age, Club, Nat, Inf, Position
+    standard = ["Name", "name", "Age", "age", "Club", "club", "Nat", "nat", "Nationality", "nationality", 
+                "Inf", "inf", "Position", "position", "Position Selected", "position_selected",
+                "Transfer Value", "transfer_value", "Value", "value", "Wage", "wage", "Salary", "salary",
+                "Scouting Knowledge", "scouting_knowledge", "Knowledge", "knowledge", "Ability", "ability", "ca", "CA"]
+                
+    actual_unknown = [c for c in unknown_cols if c not in standard and c.lower() not in [s.lower() for s in standard]]
+    
+    if actual_unknown:
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        log_path = os.path.join(base_dir, "data", "processed", "drift_warnings.log")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"WARNING: Unknown columns detected: {actual_unknown}\n")
 
 def parse_financial_value(val_str: str) -> Tuple[float, float, float]:
     """
@@ -120,6 +157,8 @@ def normalize_row(raw_row: Dict[str, Any]) -> Dict[str, Any]:
     """
     Converts a raw dictionary to a dictionary matching PlayerRecord schema.
     """
+    check_schema_drift(raw_row)
+    
     normalized = {}
     
     # Map raw column names to canonical names if possible
