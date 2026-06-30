@@ -98,3 +98,11 @@ def get_roles_config():
     config_path = os.path.join(base_dir, "config", "role_weights.json")
     with open(config_path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+@router.put("/config/roles", response_model=GenericResponse)
+def update_roles_config(new_config: Dict[str, Any]):
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    config_path = os.path.join(base_dir, "config", "role_weights.json")
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(new_config, f, indent=2)
+    return GenericResponse(status="Success", message="Tactical weights updated.")
