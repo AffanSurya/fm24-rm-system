@@ -4,27 +4,15 @@
     "fm_patch": "24.3.0",
     "description": "Custom tactical weights for FM24"
   },
-  "Advanced Forward": {
-    "acceleration": 5,
-    "pace": 5,
-    "finishing": 5,
-    "off_the_ball": 5,
-    "composure": 4,
-    "dribbling": 4,
-    "technique": 4,
-    "anticipation": 3,
-    "work_rate": 3
-  },
-  "Deep Lying Playmaker": {
-    "passing": 5,
-    "vision": 5,
-    "technique": 5,
-    "composure": 4,
-    "decisions": 4,
-    "first_touch": 4,
-    "teamwork": 4,
-    "anticipation": 3,
-    "positioning": 3
+  "Goalkeeper": {
+    "reflexes": 5,
+    "handling": 5,
+    "positioning": 5,
+    "concentration": 4,
+    "agility": 4,
+    "aerial_reach": 4,
+    "command_of_area": 4,
+    "communication": 3
   },
   "Sweeper Keeper": {
     "reflexes": 5,
@@ -37,16 +25,82 @@
     "first_touch": 3,
     "vision": 2
   },
+  "Central Defender": {
+    "tackling": 5,
+    "marking": 5,
+    "positioning": 5,
+    "heading": 5,
+    "jumping_reach": 5,
+    "strength": 4,
+    "concentration": 4,
+    "bravery": 4,
+    "pace": 3
+  },
   "Ball Playing Defender": {
     "tackling": 5,
     "marking": 5,
     "positioning": 5,
+    "passing": 5,
     "heading": 4,
     "jumping_reach": 4,
     "strength": 4,
-    "passing": 4,
     "composure": 4,
-    "vision": 3
+    "vision": 3,
+    "technique": 3
+  },
+  "No-Nonsense Centre-Back": {
+    "tackling": 5,
+    "marking": 5,
+    "positioning": 5,
+    "heading": 5,
+    "jumping_reach": 5,
+    "strength": 5,
+    "aggression": 4,
+    "bravery": 4,
+    "concentration": 4
+  },
+  "Wide Centre-Back": {
+    "tackling": 5,
+    "marking": 5,
+    "positioning": 5,
+    "pace": 4,
+    "acceleration": 4,
+    "passing": 4,
+    "dribbling": 3,
+    "stamina": 4,
+    "work_rate": 3
+  },
+  "Libero": {
+    "passing": 5,
+    "vision": 5,
+    "tackling": 4,
+    "marking": 4,
+    "positioning": 4,
+    "technique": 4,
+    "decisions": 4,
+    "composure": 4,
+    "teamwork": 4
+  },
+  "Full-Back": {
+    "tackling": 5,
+    "positioning": 5,
+    "stamina": 4,
+    "pace": 4,
+    "marking": 4,
+    "crossing": 3,
+    "anticipation": 3,
+    "work_rate": 3
+  },
+  "Wing-Back": {
+    "stamina": 5,
+    "pace": 5,
+    "acceleration": 5,
+    "crossing": 4,
+    "tackling": 4,
+    "work_rate": 4,
+    "off_the_ball": 4,
+    "positioning": 3,
+    "dribbling": 3
   },
   "Complete Wing Back": {
     "pace": 5,
@@ -58,5 +112,278 @@
     "off_the_ball": 4,
     "tackling": 3,
     "positioning": 3
+  },
+  "Inverted Wing-Back": {
+    "passing": 5,
+    "decisions": 5,
+    "vision": 4,
+    "technique": 4,
+    "stamina": 4,
+    "tackling": 4,
+    "positioning": 4,
+    "work_rate": 4,
+    "first_touch": 3
+  },
+  "Inverted Full-Back": {
+    "tackling": 5,
+    "marking": 5,
+    "positioning": 5,
+    "strength": 4,
+    "heading": 4,
+    "anticipation": 4,
+    "concentration": 4,
+    "bravery": 3
+  },
+  "Defensive Midfielder": {
+    "tackling": 5,
+    "positioning": 5,
+    "work_rate": 5,
+    "stamina": 4,
+    "strength": 4,
+    "anticipation": 4,
+    "concentration": 4,
+    "teamwork": 4
+  },
+  "Ball Winning Midfielder": {
+    "tackling": 5,
+    "aggression": 5,
+    "work_rate": 5,
+    "stamina": 5,
+    "bravery": 4,
+    "strength": 4,
+    "positioning": 3
+  },
+  "Anchor": {
+    "positioning": 5,
+    "tackling": 5,
+    "marking": 5,
+    "concentration": 5,
+    "anticipation": 4,
+    "strength": 4,
+    "decisions": 4,
+    "composure": 3
+  },
+  "Half Back": {
+    "positioning": 5,
+    "tackling": 5,
+    "marking": 4,
+    "anticipation": 4,
+    "passing": 4,
+    "composure": 4,
+    "decisions": 4,
+    "teamwork": 4
+  },
+  "Deep Lying Playmaker": {
+    "passing": 5,
+    "vision": 5,
+    "technique": 5,
+    "composure": 4,
+    "decisions": 4,
+    "first_touch": 4,
+    "teamwork": 4,
+    "anticipation": 3,
+    "positioning": 3
+  },
+  "Regista": {
+    "vision": 5,
+    "passing": 5,
+    "technique": 5,
+    "flair": 4,
+    "off_the_ball": 4,
+    "composure": 4,
+    "decisions": 4,
+    "first_touch": 4
+  },
+  "Segundo Volante": {
+    "stamina": 5,
+    "work_rate": 5,
+    "pace": 4,
+    "tackling": 4,
+    "long_shots": 4,
+    "passing": 4,
+    "off_the_ball": 4,
+    "positioning": 4,
+    "finishing": 3
+  },
+  "Central Midfielder": {
+    "passing": 4,
+    "tackling": 4,
+    "vision": 4,
+    "decisions": 4,
+    "teamwork": 5,
+    "stamina": 4,
+    "first_touch": 3,
+    "off_the_ball": 3
+  },
+  "Box to Box Midfielder": {
+    "stamina": 5,
+    "work_rate": 5,
+    "tackling": 4,
+    "passing": 4,
+    "off_the_ball": 4,
+    "positioning": 4,
+    "natural_fitness": 4,
+    "finishing": 3
+  },
+  "Mezzala": {
+    "off_the_ball": 5,
+    "passing": 5,
+    "vision": 4,
+    "technique": 4,
+    "dribbling": 4,
+    "work_rate": 4,
+    "stamina": 4,
+    "finishing": 3
+  },
+  "Carrilero": {
+    "stamina": 5,
+    "work_rate": 5,
+    "positioning": 5,
+    "teamwork": 5,
+    "tackling": 4,
+    "passing": 4,
+    "decisions": 4
+  },
+  "Advanced Playmaker": {
+    "vision": 5,
+    "passing": 5,
+    "technique": 5,
+    "decisions": 5,
+    "first_touch": 4,
+    "composure": 4,
+    "off_the_ball": 4,
+    "dribbling": 4
+  },
+  "Winger": {
+    "acceleration": 5,
+    "pace": 5,
+    "dribbling": 5,
+    "crossing": 5,
+    "technique": 4,
+    "agility": 4,
+    "stamina": 4,
+    "work_rate": 3
+  },
+  "Inside Forward": {
+    "acceleration": 5,
+    "pace": 5,
+    "dribbling": 5,
+    "off_the_ball": 5,
+    "finishing": 4,
+    "technique": 4,
+    "agility": 4,
+    "anticipation": 4
+  },
+  "Inverted Winger": {
+    "acceleration": 5,
+    "pace": 5,
+    "dribbling": 5,
+    "passing": 4,
+    "vision": 4,
+    "technique": 4,
+    "off_the_ball": 4,
+    "agility": 4,
+    "crossing": 3
+  },
+  "Attacking Midfielder": {
+    "vision": 5,
+    "passing": 5,
+    "technique": 5,
+    "off_the_ball": 4,
+    "decisions": 4,
+    "first_touch": 4,
+    "dribbling": 4,
+    "flair": 4
+  },
+  "Shadow Striker": {
+    "off_the_ball": 5,
+    "finishing": 5,
+    "anticipation": 5,
+    "acceleration": 4,
+    "pace": 4,
+    "work_rate": 4,
+    "composure": 4,
+    "passing": 3
+  },
+  "Trequartista": {
+    "vision": 5,
+    "passing": 5,
+    "technique": 5,
+    "flair": 5,
+    "off_the_ball": 5,
+    "composure": 4,
+    "first_touch": 4,
+    "agility": 4
+  },
+  "Advanced Forward": {
+    "acceleration": 5,
+    "pace": 5,
+    "finishing": 5,
+    "off_the_ball": 5,
+    "composure": 4,
+    "dribbling": 4,
+    "technique": 4,
+    "anticipation": 3,
+    "work_rate": 3
+  },
+  "Pressing Forward": {
+    "work_rate": 5,
+    "stamina": 5,
+    "aggression": 5,
+    "pace": 4,
+    "acceleration": 4,
+    "anticipation": 4,
+    "finishing": 4,
+    "teamwork": 4
+  },
+  "Poacher": {
+    "finishing": 5,
+    "anticipation": 5,
+    "off_the_ball": 5,
+    "composure": 5,
+    "acceleration": 4,
+    "agility": 4,
+    "technique": 3
+  },
+  "Target Forward": {
+    "strength": 5,
+    "jumping_reach": 5,
+    "heading": 5,
+    "bravery": 5,
+    "balance": 4,
+    "teamwork": 4,
+    "finishing": 4,
+    "composure": 3
+  },
+  "Complete Forward": {
+    "finishing": 5,
+    "heading": 5,
+    "strength": 5,
+    "passing": 4,
+    "vision": 4,
+    "technique": 4,
+    "off_the_ball": 4,
+    "pace": 4,
+    "anticipation": 4
+  },
+  "False Nine": {
+    "vision": 5,
+    "passing": 5,
+    "technique": 5,
+    "off_the_ball": 5,
+    "decisions": 4,
+    "teamwork": 4,
+    "dribbling": 4,
+    "composure": 4
+  },
+  "Deep Lying Forward": {
+    "passing": 5,
+    "teamwork": 5,
+    "vision": 4,
+    "technique": 4,
+    "strength": 4,
+    "off_the_ball": 4,
+    "finishing": 4,
+    "composure": 4
   }
 }
