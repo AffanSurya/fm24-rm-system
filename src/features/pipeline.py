@@ -32,77 +32,85 @@ def process_features(input_filepath: str, output_filepath: str):
     """
     End-to-end feature engineering pipeline.
     """
-    records = []
-    with open(input_filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.strip():
-                records.append(json.loads(line))
-                
+    df = pd.read_json(input_filepath, lines=True)
+    if df.empty:
+        return {"status": "success", "processed_records": 0}
+        
     scorer = RoleScorer()
     
-    # Enrich records with independent features
-    for r in records:
-        # Positions
-        pos_str = r.get("position_eligibility", "")
-        pos_dict = parse_position_string(pos_str)
-        r["multi_hot_positions"] = pos_dict
-        r["versatility"] = calculate_versatility(pos_dict)
-        r["primary_pos_group"] = determine_primary_position_group(pos_dict)
-        
-        # Tactics
-        r["tactical_compatibility"] = TacticalProfiler.calculate_all_styles(r)
-        
-        # Financials and Age Curves (Base)
-        age = r.get("age", 0)
-        pot = r.get("potential")
-        tv_mid = r.get("transfer_value_mid", 0)
-        tv_min = r.get("transfer_value_min", 0)
-        tv_max = r.get("transfer_value_max", 0)
-        band_width = tv_max - tv_min
-        
-        r["value_trajectory"] = calculate_value_trajectory(age, band_width)
-        
-        # Roles
-        role_scores = scorer.calculate_all_roles(r)
-        r["role_scores"] = role_scores
-        
-        # Age trajectories per role group and Value Efficiency per role
-        r["role_trajectories"] = {}
-        r["value_efficiencies"] = {}
-        r["is_developing_fit"] = {}
-        
-        for role, score in role_scores.items():
-            r_group = classify_role_group(role)
-            r["role_trajectories"][role] = calculate_current_fit_trajectory(age, r_group)
-            r["value_efficiencies"][role] = calculate_value_efficiency(score, tv_mid)
-            r["is_developing_fit"][role] = calculate_potential_realization(age, pot, score)
-            
-    # Percentile Normalization (comparing apples to apples)
-    # We load into a pandas DataFrame to easily compute grouped rank percentiles
-    df = pd.DataFrame(records)
+    def safe_dict(row):
+        d = row.to_dict()
+        res = {}
+        for k, v in d.items():
+            if isinstance(v, float) and pd.isna(v):
+                res[k] = None
+            else:
+                res[k] = v
+        return res
     
-    # We want to normalize base attributes (like tackling, finishing) WITHIN their primary_pos_group
+    # 1. Positions
+    df['multi_hot_positions'] = df['position_eligibility'].fillna("").apply(parse_position_string)
+    df['versatility'] = df['multi_hot_positions'].apply(calculate_versatility)
+    df['primary_pos_group'] = df['multi_hot_positions'].apply(determine_primary_position_group)
+    
+    # 2. Tactics
+    df['tactical_compatibility'] = df.apply(lambda row: TacticalProfiler.calculate_all_styles(safe_dict(row)), axis=1)
+    
+    # 3. Financials & Curves
+    tv_min = df.get('transfer_value_min', pd.Series(0, index=df.index)).fillna(0)
+    tv_max = df.get('transfer_value_max', pd.Series(0, index=df.index)).fillna(0)
+    band_width = tv_max - tv_min
+    
+    df['value_trajectory'] = df.apply(lambda row: calculate_value_trajectory(
+        row.get('age', 0) if pd.notna(row.get('age')) else 0, 
+        band_width[row.name]
+    ), axis=1)
+    
+    # 4. Roles
+    df['role_scores'] = df.apply(lambda row: scorer.calculate_all_roles(safe_dict(row)), axis=1)
+    
+    # 5. Role trajectories and efficiencies
+    def calculate_role_derivatives(row):
+        age = row.get('age', 0) if pd.notna(row.get('age')) else 0
+        pot = row.get('potential') if pd.notna(row.get('potential')) else None
+        tv_mid = row.get('transfer_value_mid', 0) if pd.notna(row.get('transfer_value_mid')) else 0
+        
+        trajectories = {}
+        efficiencies = {}
+        developing_fit = {}
+        
+        for role, score in row['role_scores'].items():
+            r_group = classify_role_group(role)
+            trajectories[role] = calculate_current_fit_trajectory(age, r_group)
+            efficiencies[role] = calculate_value_efficiency(score, tv_mid)
+            developing_fit[role] = calculate_potential_realization(age, pot, score)
+            
+        return pd.Series([trajectories, efficiencies, developing_fit])
+
+    df[['role_trajectories', 'value_efficiencies', 'is_developing_fit']] = df.apply(calculate_role_derivatives, axis=1)
+    
+    # Percentile Normalization (comparing apples to apples)
     attributes_to_normalize = ["tackling", "finishing", "vision", "pace", "stamina", "passing"]
     
     for attr in attributes_to_normalize:
-        # Some rows might have None for attributes, fill with 0 temporarily for ranking
         col_name = f"{attr}_percentile"
         
         def calculate_pct(series):
-            return series.rank(pct=True).fillna(0.0).round(3)
+            return pd.to_numeric(series, errors='coerce').rank(pct=True).fillna(0.0).round(3)
             
-        # Group by primary position group and calculate percentile
         if attr in df.columns:
-            # We use transform to keep the same shape
             df[col_name] = df.groupby("primary_pos_group")[attr].transform(calculate_pct)
             
-    # Convert back to dict and save
-    final_records = df.to_dict(orient="records")
+    # Convert back to dict and save atomically
+    final_records = df.where(pd.notnull(df), None).to_dict(orient="records")
     
     os.makedirs(os.path.dirname(output_filepath), exist_ok=True)
-    with open(output_filepath, "w", encoding="utf-8") as f:
+    
+    temp_file_path = output_filepath + ".tmp"
+    with open(temp_file_path, "w", encoding="utf-8") as f:
         for r in final_records:
             f.write(json.dumps(r) + "\n")
+    os.replace(temp_file_path, output_filepath)
             
     return {
         "status": "success",

@@ -1,6 +1,8 @@
 import os
 import json
-import asyncio
+import threading
+import pandas as pd
+import numpy as np
 from typing import List, Dict, Any
 
 from src.models.similarity import PlayerSimilarityModel
@@ -9,7 +11,8 @@ from src.ingestion.pipeline import process_pipeline
 
 class ApplicationState:
     def __init__(self):
-        self.records: List[Dict[str, Any]] = []
+        self.lock = threading.Lock()
+        self.df = pd.DataFrame()
         self.similarity_model = PlayerSimilarityModel(n_components=15)
         
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -19,12 +22,13 @@ class ApplicationState:
     def get_latest_features_file(self):
         if not os.path.exists(self.processed_dir):
             return None
-        files = [f for f in os.listdir(self.processed_dir) if f.startswith("features_") and f.endswith(".jsonl")]
+        files = [os.path.join(self.processed_dir, f) for f in os.listdir(self.processed_dir) if f.startswith("features_") and f.endswith(".jsonl")]
         if not files:
             return None
-        # Lexicographical sort works for YYYYMMDDHHMMSS
-        files.sort(reverse=True)
-        return os.path.join(self.processed_dir, files[0])
+        
+        # Sort by modification time, newest first
+        files.sort(key=os.path.getmtime, reverse=True)
+        return files[0]
         
     def load_data(self):
         """Loads the newest processed JSONL into memory and fits the PCA model."""
@@ -33,23 +37,57 @@ class ApplicationState:
             print(f"Warning: No features file found in {self.processed_dir}")
             return
             
-        new_records = []
-        with open(latest_file, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    new_records.append(json.loads(line))
-                    
-        self.records = new_records
-        
-        if self.records:
-            self.similarity_model.fit(self.records)
-            print(f"Loaded {len(self.records)} records and fitted PCA model.")
+        with self.lock:
+            try:
+                # Load JSON lines directly into Pandas
+                self.df = pd.read_json(latest_file, lines=True)
+                
+                if not self.df.empty:
+                    # Convert to list of dicts purely for the PCA fit
+                    # PCA fit expects list of dicts based on the original similarity.py signature
+                    records = self._safe_to_dict(self.df)
+                    self.similarity_model.fit(records)
+                    print(f"Loaded {len(self.df)} records and fitted PCA model.")
+            except Exception as e:
+                print(f"Error loading state data: {e}")
+                self.df = pd.DataFrame()
             
+    def _get_club_mask(self, team_name: str, include: bool):
+        if self.df.empty:
+            return pd.Series(dtype=bool)
+            
+        club_col = self.df['club'].astype(str).str.lower().str.strip()
+        mask_exact = club_col == team_name.lower().strip()
+        mask_null = self.df['club'].isna() | (club_col == "nan") | (club_col == "-") | (club_col == "none") | (club_col == "")
+        
+        mask = mask_exact | mask_null
+        return mask if include else ~mask
+
+    def _safe_to_dict(self, df_subset: pd.DataFrame) -> List[Dict[str, Any]]:
+        # Convert NaN back to None for correct JSON serialization by FastAPI
+        return df_subset.replace({np.nan: None}).to_dict(orient='records')
+
     def get_squad(self, team_name: str) -> List[Dict[str, Any]]:
-        return [r for r in self.records if not r.get("club") or (isinstance(r.get("club"), str) and team_name.lower() in r.get("club").lower())]
+        with self.lock:
+            if self.df.empty:
+                return []
+            mask = self._get_club_mask(team_name, include=True)
+            return self._safe_to_dict(self.df[mask])
         
     def get_scouted_pool(self, team_name: str) -> List[Dict[str, Any]]:
-        return [r for r in self.records if r.get("club") and not (isinstance(r.get("club"), str) and team_name.lower() in r.get("club").lower())]
+        with self.lock:
+            if self.df.empty:
+                return []
+            mask = self._get_club_mask(team_name, include=False)
+            return self._safe_to_dict(self.df[mask])
+            
+    @property
+    def records(self):
+        """Backward compatibility property if anything external tries to access records directly."""
+        with self.lock:
+            if self.df.empty:
+                return []
+            return self._safe_to_dict(self.df)
         
     def run_ingestion_pipeline_sync(self, raw_dir: str):
         """Runs the entire pipeline Phase 1 -> Phase 2 and reloads data."""
