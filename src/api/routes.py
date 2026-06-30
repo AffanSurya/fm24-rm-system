@@ -36,7 +36,7 @@ async def ingest_files(background_tasks: BackgroundTasks, files: List[UploadFile
             rtf_paths.append(file_location)
             
     # Add to background task
-    background_tasks.add_task(state.run_ingestion_pipeline_sync, html_paths, rtf_paths)
+    background_tasks.add_task(state.run_ingestion_pipeline_sync, upload_dir)
     
     return GenericResponse(status="Accepted", message="Files received. Ingestion pipeline started in the background.")
 
