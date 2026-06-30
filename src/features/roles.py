@@ -42,4 +42,5 @@ class RoleScorer:
         """
         Calculates scores for all known roles.
         """
-        return {role: self.calculate_role_score(player_record, role) for role in self.weights}
+        return {role: self.calculate_role_score(player_record, role) 
+                for role in self.weights if role != "_metadata"}

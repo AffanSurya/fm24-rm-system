@@ -46,10 +46,10 @@ class ApplicationState:
             print(f"Loaded {len(self.records)} records and fitted PCA model.")
             
     def get_squad(self, team_name: str) -> List[Dict[str, Any]]:
-        return [r for r in self.records if isinstance(r.get("club"), str) and team_name.lower() in r.get("club").lower()]
+        return [r for r in self.records if not r.get("club") or (isinstance(r.get("club"), str) and team_name.lower() in r.get("club").lower())]
         
     def get_scouted_pool(self, team_name: str) -> List[Dict[str, Any]]:
-        return [r for r in self.records if not (isinstance(r.get("club"), str) and team_name.lower() in r.get("club").lower())]
+        return [r for r in self.records if r.get("club") and not (isinstance(r.get("club"), str) and team_name.lower() in r.get("club").lower())]
         
     def run_ingestion_pipeline_sync(self, raw_dir: str):
         """Runs the entire pipeline Phase 1 -> Phase 2 and reloads data."""

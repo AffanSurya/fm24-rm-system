@@ -25,7 +25,7 @@ if st.button("Find Pareto Optimal Targets"):
                 "max_transfer": max_transfer,
                 "max_wage": max_wage
             },
-            "weights": {"development_potential": 1.0, "current_ability": 1.0, "financial_efficiency": 1.0}
+            "weights": {"fit": 1.0, "value": 1.0, "investment": 1.0}
         }
         
         try:
@@ -81,5 +81,8 @@ if st.button("Find Pareto Optimal Targets"):
             else:
                 st.warning("No feasible candidates found under these budget constraints.")
                 
+        except requests.exceptions.HTTPError as e:
+            detail = e.response.json().get("detail", str(e)) if e.response is not None else str(e)
+            st.warning(f"API Error: {detail}")
         except requests.exceptions.RequestException as e:
             st.error(f"Error connecting to API: {e}")

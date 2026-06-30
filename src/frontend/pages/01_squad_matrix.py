@@ -45,5 +45,8 @@ if st.button("Analyze Squad") and team_name:
                 else:
                     st.info("No players in this positional group.")
                     
+        except requests.exceptions.HTTPError as e:
+            detail = e.response.json().get("detail", str(e)) if e.response is not None else str(e)
+            st.warning(f"API Error: {detail}")
         except requests.exceptions.RequestException as e:
             st.error(f"Error connecting to API: {e}")

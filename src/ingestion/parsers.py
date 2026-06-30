@@ -58,10 +58,15 @@ class HTMLParser(BaseParser):
 
 class RTFParser(BaseParser):
     def parse(self, filepath: str) -> List[Dict[str, Any]]:
-        with open(filepath, "r", encoding="utf-8") as f:
-            rtf_content = f.read()
+        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+            raw_content = f.read()
             
-        text = rtf_to_text(rtf_content)
+        if "| Name" in raw_content or "|  Name" in raw_content:
+            # FM24 exports plain text tables but names them .rtf
+            text = raw_content
+        else:
+            text = rtf_to_text(raw_content)
+            
         lines = text.split("\n")
         
         # Find table start (lines starting with | or containing multiple |)
