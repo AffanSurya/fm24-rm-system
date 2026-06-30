@@ -85,27 +85,36 @@ class RecommendationEngine:
             val_traj = r.get("value_trajectory", "Stable")
             replaceability = similarity_model.calculate_replaceability(r, similarity_threshold=0.8)
             
-            # Find the best role trajectory
             role_trajs = r.get("role_trajectories", {})
             best_traj = max(role_trajs.values()) if role_trajs else 0.0
             
-            # Proxy for Highly Influential / Team Leader
             leadership = r.get("leadership", 5)
             determination = r.get("determination", 5)
             is_influential = (leadership >= 15 or determination >= 16)
             
+            is_developing = any(r.get("is_developing_fit", {}).values())
+            wage_annual = r.get("wage_annual", 0.0)
+            
             signal = "Keep"
             reason = []
             
+            # Youth Protection
+            if is_developing:
+                signal = "Keep"
+                reason.append("Youth Prospect: Currently developing role fit, do not sell.")
+            
             # Hard Sell Logic
-            if val_traj in ["Depressed", "Highly Depressed"] and replaceability > 2:
-                if best_traj < 0.0: # Attributes are also decaying
+            elif val_traj in ["Depressed", "Highly Depressed"] and replaceability > 2:
+                if best_traj < 0.0:
                     if is_influential:
                         signal = "Monitor"
                         reason.append("Morale Risk: Value and attributes decaying, highly replaceable, but selling may disrupt squad dynamics.")
                     else:
                         signal = "Sell"
-                        reason.append("Hard Sell: Value and attributes are decaying, and multiple cheaper replacements exist.")
+                        reason_text = "Hard Sell: Value and attributes are decaying, and multiple cheaper replacements exist."
+                        if wage_annual > 5_000_000: # High wage burden threshold
+                            reason_text += " High wage burden exacerbates necessity to sell."
+                        reason.append(reason_text)
                 else:
                     signal = "Keep"
                     reason.append("Hold: Value is depressed, but current-fit trajectory is still in peak phase.")
