@@ -188,6 +188,47 @@ Di zona bawah: URL toko / watermark brand.
 - **Label teks:** Putih `#ffffff` atau sesuaikan kontras dengan BG widget masing-masing
 - **Jangan** seragamkan warna antar segmen — biarkan palet tiap tema berbicara sendiri
 
+
+
+
+
+
+
+Pertanyaan bagus! Mari kita cek dulu rasionya:
+
+> **2000 × 1636** → rasio **≈ 1.22:1** (sedikit landscape, mendekati **5:4**)
+
+Ini bukan square murni, tapi juga bukan landscape penuh. Jawabannya:
+
+---
+
+## ✅ Yang TETAP SAMA
+- **Skenario & urutan scene** — 100% sama, tidak perlu diubah
+- **Timing** (hook → chat → goal → tasklist → closing) — tetap
+- **Pilihan widget FG-** yang ditampilkan — tetap
+- **Zona layout 3 bagian** (atas/tengah/bawah) — masih relevan & bisa dipakai
+
+---
+
+## 🔄 Yang Perlu DISESUAIKAN (minor)
+
+| Elemen | Square 2000×2000 | Landscape 2000×1636 |
+|---|---|---|
+| Zona atas (label) | 400px tinggi | ~280px tinggi |
+| Zona tengah (widget) | 1200px tinggi | ~1076px tinggi |
+| Zona bawah (CTA) | 400px tinggi | ~280px tinggi |
+| Widget di zona tengah | Scale ke ~1600px lebar | Scale ke **~1800px lebar** — bisa lebih lebar & "cinematic" |
+| Teks headline (hook) | 180px | Turunkan ke ~140–160px agar proporsional |
+| Closing grid 1×3 | Vertikal nyaman | Tetap bisa vertikal, atau switch ke **2+1 layout** |
+
+---
+
+**Intinya:** Resolusi 2000×1636 justru sedikit lebih *menguntungkan* karena widget bisa tampil **lebih lebar dan detail terlihat lebih besar**, sementara ruang vertikal yang sedikit lebih kecil tidak masalah karena widget stream memang umumnya horizontal/landscape.
+
+---
+
+Mau saya update skrip-nya dengan kalkulasi zona yang sudah disesuaikan ke **2000×1636**?
+
 ---
 
 > 💡 **Tips Rekaman Widget:**
